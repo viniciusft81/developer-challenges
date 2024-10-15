@@ -1,5 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get } from '@nestjs/common';
 import { PrismaService } from './database/prisma.service';
+import { randomUUID } from 'node:crypto'
+import { CreateMachineBody } from './dtos/create-machine-body';
 
 @Controller()
 export class AppController {
@@ -8,12 +10,14 @@ export class AppController {
   ) {}
 
   @Get('hello')
-  async getHello() {
+  async getHello(@Body() body: CreateMachineBody) {
+    const { name, type } = body
+
     const machine = await this.prisma.machine.create({
       data: {
-        idMachine: "maq1",
-        name: 'My Machine',
-        type: 'Fan',
+        idMachine: randomUUID(),
+        name,
+        type,
       }
     })
     return {

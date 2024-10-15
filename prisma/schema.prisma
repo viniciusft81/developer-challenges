@@ -8,7 +8,36 @@ datasource db {
 }
 
 model Machine {
-  idMachine String @id
+  idMachine        String            @id
+  name             String
+  type             String
+  monitoringPoints MonitoringPoint[]
+}
+
+model MonitoringPoint {
+  idPoint   String
   name      String
-  type      String
+  machineId String
+  machine   Machine  @relation(fields: [machineId], references: [idMachine])
+  sensors   Sensor[]
+
+  @@id([idPoint, machineId])
+}
+
+model Sensor {
+  idSensor        String          @id @unique
+  model           String
+  pointId         String
+  machineId       String
+  monitoringPoint MonitoringPoint @relation(fields: [pointId, machineId], references: [idPoint, machineId])
+  dados           DataSensor[]
+}
+
+model DataSensor {
+  sensorId  String
+  timestamp String
+  value     Int
+  sensor    Sensor @relation(fields: [sensorId], references: [idSensor])
+
+  @@id([timestamp, sensorId])
 }

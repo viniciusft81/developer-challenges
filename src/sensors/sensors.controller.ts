@@ -8,7 +8,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class SensorsController {
   constructor(private readonly sensorsService: SensorsService) {}
 
-  @Post(':machineId, :pointId')
+  @Post(':machineId/:pointId')
   @UseGuards(AuthGuard)
   create(
     @Body() createSensorDto: CreateSensorDto, 
@@ -16,7 +16,7 @@ export class SensorsController {
     @Param('machineId') machineId: string,
     @Param('pointId') pointId: string
   ) {
-    return this.sensorsService.create(createSensorDto, req.sub, machineId, pointId);
+    return this.sensorsService.create(createSensorDto, req, machineId, pointId);
   }
 
   @Get()

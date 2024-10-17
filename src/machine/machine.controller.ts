@@ -11,7 +11,7 @@ export class MachineController {
   @Post()
   @UseGuards(AuthGuard)
   create(@Body() createMachineDto: CreateMachineDto, @Request() req: any) {
-    return this.machineService.create(createMachineDto, req.sub);
+    return this.machineService.create(createMachineDto, req);
   }
 
   @Get()

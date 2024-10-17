@@ -8,14 +8,14 @@ import { randomUUID } from 'node:crypto'
 export class MachineService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createMachineDto: CreateMachineDto, userId: number ) {
+  async create(createMachineDto: CreateMachineDto, req: any) {
     const { name, type } = createMachineDto;
     const machine = await this.prisma.machine.create({
       data: {
         idMachine: randomUUID(),
         name,
         type,
-        userId
+        userId: req.sub.sub
       }
     })
     return {

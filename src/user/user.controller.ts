@@ -21,7 +21,7 @@ export class UserController {
   }
   
   @UseGuards(AuthGuard)
-  @Put()
+  @Put('id')
   async updateUser(
     @Body() userData: Prisma.UserUpdateInput,
     @Param('id') id: string,

@@ -4,6 +4,7 @@ CREATE TABLE "Sensor" (
     "model" TEXT NOT NULL,
     "pointId" TEXT NOT NULL,
     "machineId" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Sensor_pkey" PRIMARY KEY ("idSensor")
 );
@@ -11,7 +12,7 @@ CREATE TABLE "Sensor" (
 -- CreateTable
 CREATE TABLE "DataSensor" (
     "sensorId" TEXT NOT NULL,
-    "timestamp" TEXT NOT NULL,
+    "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "value" INTEGER NOT NULL,
 
     CONSTRAINT "DataSensor_pkey" PRIMARY KEY ("timestamp","sensorId")
@@ -19,6 +20,9 @@ CREATE TABLE "DataSensor" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Sensor_idSensor_key" ON "Sensor"("idSensor");
+
+-- AddForeignKey
+ALTER TABLE "Sensor" ADD CONSTRAINT "Sensor_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Sensor" ADD CONSTRAINT "Sensor_pointId_machineId_fkey" FOREIGN KEY ("pointId", "machineId") REFERENCES "MonitoringPoint"("idPoint", "machineId") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -7,43 +7,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum MachineType {
+  Pump
+  Fan
+}
+
+enum SensorModel {
+  TcAg
+  TcAs
+  HFPlus
+}
+
 model Machine {
-  idMachine        String            @id
-  name             String
-  type             String
-  monitoringPoints MonitoringPoint[]
+  idMachine String            @id
+  name      String
+  type      MachineType
+  userId    Int
+  user      User              @relation(fields: [userId], references: [id])
+  points    MonitoringPoint[]
 }
 
 model MonitoringPoint {
   idPoint   String
   name      String
   machineId String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
   machine   Machine  @relation(fields: [machineId], references: [idMachine])
   sensors   Sensor[]
 
   @@id([idPoint, machineId])
 }
 
+model User {
+  id        Int               @id @default(autoincrement())
+  email     String            @unique
+  password  String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  machines  Machine[]
+  points    MonitoringPoint[]
+  sensors   Sensor[]
+}
+
 model Sensor {
   idSensor        String          @id @unique
-  model           String
+  model           SensorModel
   pointId         String
   machineId       String
+  userId          Int
+  user            User            @relation(fields: [userId], references: [id])
   monitoringPoint MonitoringPoint @relation(fields: [pointId, machineId], references: [idPoint, machineId])
   dados           DataSensor[]
 }
 
 model DataSensor {
   sensorId  String
-  timestamp String
+  timestamp DateTime @default(now())
   value     Int
-  sensor    Sensor @relation(fields: [sensorId], references: [idSensor])
+  sensor    Sensor   @relation(fields: [sensorId], references: [idSensor])
 
   @@id([timestamp, sensorId])
-}
-
-model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
 }

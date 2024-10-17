@@ -29,12 +29,12 @@ export class MonitoringPointService {
     })
   }
 
-  findAll() {
-    return this.prisma.monitoringPoint.findMany();
+  async findAll() {
+    return await this.prisma.monitoringPoint.findMany();
   }
 
-  findOne(id: string, machineId: string) {
-    return this.prisma.monitoringPoint.findUnique({
+  async findOne(id: string, machineId: string) {
+    return await this.prisma.monitoringPoint.findUnique({
       where: {
           idPoint_machineId: {
               idPoint: id,
@@ -44,8 +44,8 @@ export class MonitoringPointService {
   });
   }
 
-  update(id: string, machineId: string, updateMonitoringPointDto: UpdateMonitoringPointDto) {
-    return this.prisma.monitoringPoint.update({
+  async update(id: string, machineId: string, updateMonitoringPointDto: UpdateMonitoringPointDto) {
+    return await this.prisma.monitoringPoint.update({
       where: {
         idPoint_machineId: {
           idPoint: id,
@@ -58,8 +58,8 @@ export class MonitoringPointService {
     });
   }
 
-  remove(id: string, machineId: string) {
-    return this.prisma.monitoringPoint.delete({
+  async remove(id: string, machineId: string) {
+    return await this.prisma.monitoringPoint.delete({
       where: {
         idPoint_machineId: {
           idPoint: id,

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service'
 import { Prisma, User as UserModel } from '@prisma/client';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -24,8 +24,8 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Get a user by ID' })
-  async getUser(@Param('id') id: string): Promise<UserModel> {
-    return this.userService.user({ id: Number(id) });
+  async getUser(@Param('id', ParseIntPipe) id: number): Promise<Omit<UserModel, 'password'>> {
+    return this.userService.user({ id });
   }
   
   @UseGuards(AuthGuard)
@@ -35,10 +35,10 @@ export class UserController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async updateUser(
     @Body() userData: Prisma.UserUpdateInput,
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ) : Promise<UserModel> {
     return this.userService.updateUser({
-      where: { id: Number(id) },
+      where: { id },
       data: userData,
     });
   }
@@ -48,7 +48,7 @@ export class UserController {
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 200, description: 'The user has been successfully deleted.' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async deleteUser(@Param('id') id: string): Promise<UserModel> {
-    return this.userService.deleteUser({ id: Number(id) });
+  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<UserModel> {
+    return this.userService.deleteUser({ id });
   }
 }

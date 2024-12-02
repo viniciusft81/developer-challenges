@@ -11,13 +11,20 @@ export class SensorsService {
   async create(createSensorDto: CreateSensorDto, req: any, machineId: string, pointId: string) {
     const sensorId = randomUUID()
 
-    const machine = await this.prisma.machine.findUnique({
-      where: { idMachine: machineId },
+    const machine = await this.prisma.machine.findFirst({
+      where: { 
+        idMachine: machineId, 
+        userId: req.sub.sub
+      },
     });
     if (!machine) throw new NotFoundException('Machine not found');
 
-    const point = await this.prisma.monitoringPoint.findUnique({
-      where: { idPoint_machineId: {idPoint: pointId, machineId: machineId} },
+    const point = await this.prisma.monitoringPoint.findFirst({
+      where: { 
+        idPoint: pointId, 
+        machineId: machineId, 
+        userId: req.sub.sub
+      },
     });
     if (!point) throw new NotFoundException('Monitoring point not found');
 
@@ -37,21 +44,27 @@ export class SensorsService {
     })
   }
 
-  async findAll() {
-    return await this.prisma.sensor.findMany();
+  async findAll(req: any) {
+    return await this.prisma.sensor.findMany(
+      {
+        where: {
+          userId: req.sub.sub}
+      }
+    );
   }
 
-  async getSensorDetails() {
+  async getSensorDetails(req: any) {
     return await this.prisma.sensor.findMany({
+      where: { userId: req.sub.sub }, 
       select: {
-        model: true, // Sensor Model
+        model: true,
         monitoringPoint: {
           select: {
-            name: true, // Monitoring Point Name
+            name: true, 
             machine: {
               select: {
-                name: true, // Machine Name
-                type: true // Machine Type
+                name: true, 
+                type: true 
               }
             }
           },
@@ -60,15 +73,26 @@ export class SensorsService {
     })
   }
 
-  async findOne(id: string) {
-    return await this.prisma.sensor.findUnique({where: {idSensor: id}});
+  async findOne(id: string, req: any) {
+    return await this.prisma.sensor.findFirst({where: {idSensor: id, userId: req.sub.sub}});
   }
 
-  async update(id: string, updateSensorDto: UpdateSensorDto) {
-    return this.prisma.sensor.update({where: {idSensor: id}, data: updateSensorDto});
+  async update(id: string, updateSensorDto: UpdateSensorDto, req: any) {
+    return this.prisma.sensor.update({where: {idSensor: id, userId: req.sub.sub }, data: updateSensorDto});
   }
 
-  async remove(id: string) {
-    return await this.prisma.sensor.delete({where: {idSensor: id}});
+  async remove(id: string, req: any) {
+    const sensor = await this.prisma.sensor.findFirst({
+      where: { 
+        idSensor: id,
+        userId: req.sub.sub,
+      },
+    });
+  
+    if (!sensor) {
+      throw new NotFoundException('Sensor not found or does not belong to the user');
+    }
+
+    return await this.prisma.sensor.delete({where: {idSensor: id }});
   }
 }

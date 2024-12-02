@@ -28,8 +28,8 @@ export class MonitoringPointController {
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get all monitoring points' })
   @ApiResponse({ status: 200, description: 'Return all monitoring points.' })
-  findAll() {
-    return this.monitoringPointService.findAll();
+  findAll(@Request() req: any) {
+    return this.monitoringPointService.findAll(req);
   }
 
   @Get(':id/:machineId')
@@ -39,8 +39,8 @@ export class MonitoringPointController {
   @ApiResponse({ status: 404, description: 'Monitoring point not found.' })
   @ApiParam({ name: 'id', type: String, description: 'Point Id' })
   @ApiParam({ name: 'machineId', type: String, description: 'Machine Id' })
-  findOne(@Param('id') id: string, @Param('machineId') machineId: string) {
-    return this.monitoringPointService.findOne(id, machineId);
+  findOne(@Param('id') id: string, @Param('machineId') machineId: string, @Request() req: any) {
+    return this.monitoringPointService.findOne(id, machineId, req);
   }
 
   @Patch(':id/:machineId')
@@ -50,8 +50,8 @@ export class MonitoringPointController {
   @ApiResponse({ status: 404, description: 'Monitoring point not found.' })
   @ApiParam({ name: 'id', type: String, description: 'Point Id' })
   @ApiParam({ name: 'machineId', type: String, description: 'Machine Id' })
-  update(@Param('id') id: string, @Param('machineId') machineId: string, @Body() updateMonitoringPointDto: UpdateMonitoringPointDto) {
-    return this.monitoringPointService.update(id, machineId, updateMonitoringPointDto);
+  update(@Param('id') id: string, @Param('machineId') machineId: string, @Body() updateMonitoringPointDto: UpdateMonitoringPointDto, @Request() req: any) {
+    return this.monitoringPointService.update(id, machineId, updateMonitoringPointDto, req);
   }
 
   @Delete(':id/:machineId')
@@ -61,7 +61,7 @@ export class MonitoringPointController {
   @ApiResponse({ status: 404, description: 'Monitoring point not found.' })
   @ApiParam({ name: 'id', type: String, description: 'Point Id' })
   @ApiParam({ name: 'machineId', type: String, description: 'Machine Id' })
-  remove(@Param('id') id: string, @Param('machineId') machineId: string) {
-    return this.monitoringPointService.remove(id, machineId);
+  remove(@Param('id') id: string, @Param('machineId') machineId: string, @Request() req: any) {
+    return this.monitoringPointService.remove(id, machineId, req);
   }
 }

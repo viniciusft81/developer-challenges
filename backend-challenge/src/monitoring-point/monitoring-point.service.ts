@@ -11,8 +11,11 @@ export class MonitoringPointService {
   async create(createMonitoringPointDto: CreateMonitoringPointDto, req: any, machineId: string) {
     const pointId = randomUUID()
 
-    const machine = await this.prisma.machine.findUnique({
-      where: { idMachine: machineId },
+    const machine = await this.prisma.machine.findFirst({
+      where: { 
+        idMachine: machineId,
+        userId: req.sub.sub
+      },
     });
 
     if (!machine) {
@@ -29,42 +32,67 @@ export class MonitoringPointService {
     })
   }
 
-  async findAll() {
-    return await this.prisma.monitoringPoint.findMany();
+  async findAll(req: any) {
+    return await this.prisma.monitoringPoint.findMany(
+      {
+        where: {
+          userId: req.sub.sub
+        }
+      }
+    );
   }
 
-  async findOne(id: string, machineId: string) {
-    return await this.prisma.monitoringPoint.findUnique({
+  async findOne(id: string, machineId: string, req: any) {
+    const point = await this.prisma.monitoringPoint.findFirst({
       where: {
-          idPoint_machineId: {
-              idPoint: id,
-              machineId: machineId
-          }
+        idPoint: id,
+        machineId: machineId, 
+        userId: req.sub.sub
       }
   });
+    if(!point) {
+      throw new NotFoundException('Monitoring point not found');
+    }
+    return point;
   }
 
-  async update(id: string, machineId: string, updateMonitoringPointDto: UpdateMonitoringPointDto) {
+  async update(id: string, machineId: string, updateMonitoringPointDto: UpdateMonitoringPointDto, req: any) {
+    const point = await this.prisma.monitoringPoint.findFirst({
+      where: {
+        idPoint: id,
+        machineId: machineId,
+        userId: req.sub.sub
+      },
+    });
+    if (!point) throw new NotFoundException('Monitoring point not found');
+    
     return await this.prisma.monitoringPoint.update({
       where: {
         idPoint_machineId: {
           idPoint: id,
           machineId: machineId
-        }
-      }, 
-      
-      data: updateMonitoringPointDto
-    
+        },
+      },   
+      data: updateMonitoringPointDto    
     });
   }
 
-  async remove(id: string, machineId: string) {
+  async remove(id: string, machineId: string, req: any) {
+    const point = await this.prisma.monitoringPoint.findFirst({
+      where: {
+        idPoint: id,
+        machineId: machineId,
+        userId: req.sub.sub
+      },
+    });
+    if (!point) throw new NotFoundException('Monitoring point not found');
+
     return await this.prisma.monitoringPoint.delete({
       where: {
         idPoint_machineId: {
           idPoint: id,
           machineId: machineId
-        }
+        },
       }
     });
   }

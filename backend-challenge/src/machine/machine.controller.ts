@@ -24,8 +24,8 @@ export class MachineController {
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get all machines' })
   @ApiResponse({ status: 200, description: 'Return all machines.' })
-  findAll() {
-    return this.machineService.findAll();
+  findAll(@Request() req: any) {
+    return this.machineService.findAll(req);
   }
 
   @Get(':id')
@@ -34,23 +34,23 @@ export class MachineController {
   @ApiResponse({ status: 200, description: 'Return the machine.' })
   @ApiResponse({ status: 404, description: 'Machine not found.' })
   @ApiParam({ name: 'id', required: true, description: 'Machine ID' })
-  findOne(@Param('id') id: string) {
-    return this.machineService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req: any) {
+    return this.machineService.findOne(id, req);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Update machine' })
   @ApiParam({ name: 'id', required: true, description: 'Machine ID' })
-  update(@Param('id') id: string, @Body() updateMachineDto: UpdateMachineDto) {
-    return this.machineService.update(id, updateMachineDto);
+  update(@Param('id') id: string, @Body() updateMachineDto: UpdateMachineDto, @Request() req: any) {
+    return this.machineService.update(id, updateMachineDto, req);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Delete machine' })
   @ApiParam({ name: 'id', required: true, description: 'Machine ID' })
-  remove(@Param('id') id: string) {
-    return this.machineService.remove(id);
+  remove(@Param('id') id: string, @Request() req: any) {
+    return this.machineService.remove(id, req);
   }
 }
